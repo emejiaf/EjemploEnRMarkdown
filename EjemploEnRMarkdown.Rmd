@@ -1,0 +1,41 @@
+---
+title: "Primer reporte en R Markdown"
+author: "Enrique Mejia Fontanot - 142658"
+output: html_document
+---
+
+### Introducción al formato R Markdown
+
+Ejemplo elaborado en `r date()`.
+
+```{r Paquetes}
+library(ggmap)
+```
+
+```{r GenerarDatos, message=FALSE}
+# Llenar información (sólo lo que está entre "").
+clave.unica <- rep("142658",3)
+# 1: Si es mixto, 0: no lo es.
+es.mixto <- c(universidad = 1, preparatoria = 1, secundaria = 1)
+# Llenar con la dirección.
+universidad <- geocode("ITAM")
+preparatoria <- geocode("Escuela Moderna Americana")
+secundaria <- geocode("Escuela Moderna Americana")
+# Generamos la información
+educacion <- rbind(universidad, preparatoria, secundaria)
+educacion <- cbind(clave.unica, es.mixto, educacion)
+```
+
+```{r ObtenciónCoordenadasYMapas, warning=FALSE, message=FALSE}
+limites <- make_bbox(lon, lat, educacion, f = 0.7)
+mapa <- get_map(location = limites, 
+                maptype = "roadmap", 
+                source = "google")
+```
+
+```{r GraficarLocalizaciones, echo=FALSE}
+ggmap(mapa) + 
+geom_point(data = educacion, 
+           aes(x = lon, y = lat), 
+           size = 4, alpha = 0.6, colour = "red")
+```
